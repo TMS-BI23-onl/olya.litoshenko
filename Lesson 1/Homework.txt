@@ -1,0 +1,2 @@
+AdventureWorks2017.Person.Person | Created date: 27.10.2017 14:33
+AdventureWorksDW2017.dbo.DimPromotion | Data space: 8000 butes
