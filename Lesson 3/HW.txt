@@ -1,0 +1,45 @@
+--1)	Вывести цвет и среднюю цену продуктов этого цвета из таблицы Production.Product для всех цветов, имеющих как минимум 40 продуктов.
+
+	SELECT Color, AVG(ListPrice) as avg_ListPrice
+	FROM Production.Product
+	GROUP BY Color
+	HAVING COUNT (*)>= 40
+
+	--2)	Для каждого города из Person.Address посчитать количество жителей.
+	SELECT City, COUNT (AddressID) as CountPerson
+	FROM Person.Address
+	GROUP BY City
+	
+	--3)	В таблице Production.ProductInventory найти 5 ProductID, которых больше всего находится на складе (поле Quantity-количество).
+	SELECT TOP 5 ProductID
+	FROM Production.ProductInventory
+	ORDER BY Quantity DESC
+
+
+
+	--4)	Вывести только те отзывы из Production.ProductReview, для которых рейтинг выше среднего рейтинга среди всех оценок. 
+	SELECT Comments 
+	FROM Production.ProductReview
+	WHERE Rating > (SELECT AVG(Rating) 	FROM Production.ProductReview)
+
+		
+
+--5)	В таблице Purchasing.ShipMethod найти строки, у которых стоимость доставки ShipRate будет больше минимальной ненулевой цены ListPrice из таблицы Production.Product.
+	SELECT * 
+	FROM Purchasing.ShipMethod
+	WHERE ShipRate > ( SELECT MIN (ListPrice) as min_listPrise	FROM Production.Product WHERE ListPrice != 0)
+	
+	
+	 --6)	Найдите все BusinessEntityID из Person.Person, у которых нет записей о кредитных картах в Sales.PersonCreditCard. Придумайте 2 способа решения.
+	SELECT BusinessEntityID
+	FROM Person.Person
+	WHERE BusinessEntityID not in (SELECT BusinessEntityID
+	FROM Sales.PersonCreditCard)
+	
+
+
+	SELECT BusinessEntityID
+	FROM Person.Person
+	WHERE 0 = (SELECT COUNT (BusinessEntityID) as count_ID
+	FROM Sales.PersonCreditCard
+	WHERE BusinessEntityID = Person.Person.BusinessEntityID)
