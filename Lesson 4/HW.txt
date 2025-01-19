@@ -1,0 +1,64 @@
+--a)	Вывести список цен в виде текстового комментария, основанного на диапазоне цен для продукта:
+--a.	StandardCost равен 0 или не определен – ‘Not for sale’  
+--b.	StandardCost больше 0, но меньше 100 – ‘<$100’ 
+--c.	StandardCost больше или равно 100, но меньше 500 - ‘ <$500' 
+--d.	Иначе - ‘ >= $500'
+--Вывести имя продукта и новое поле PriceRange.
+
+
+
+SELECT name, 
+ CASE 
+WHEN StandardCost=0 THEN 'Not for sale'
+WHEN StandardCost>0 AND StandardCost<100 THEN '<$100'
+WHEN StandardCost>=100 AND StandardCost<500 THEN '<$500'
+ELSE '>= $500'
+END AS  PriceRange
+From [Production].[Product]
+
+
+--b)	Найти ProductID, BusinessEntityID и имя поставщика продукции из Purchasing.ProductVendor и Purchasing.Vendor, где StandardPrice больше $10. 
+--Также в имени вендора должна присутствовать (вне зависимости от положения) буква X или имя должно начинаться на букву N.
+
+SELECT PrVend.ProductID, PrVend.BusinessEntityID, Vend.Name
+FROM Purchasing.ProductVendor PrVend  LEFT JOIN Purchasing.Vendor Vend ON PrVend.BusinessEntityID=Vend.BusinessEntityID
+WHERE StandardPrice >10 AND (Vend.Name LIKE '%X%' OR Vend.Name LIKE 'N%')
+
+
+--c)	Найти имена всех вендоров, продукция которых не продавалась за всё время. 
+--Необходимо использовать следующую схему соединения таблиц Purchasing.ProductVendor и Purchasing.Vendor:
+
+SELECT Vend.Name
+FROM Purchasing.Vendor Vend  FULL JOIN  Purchasing.ProductVendor PrVend ON Vend.BusinessEntityID = PrVend.BusinessEntityID
+WHERE PrVend.BusinessEntityID IS NULL
+
+-- какой вариат лучше использовать?
+SELECT *
+FROM Purchasing.Vendor
+WHERE BusinessEntityID NOT IN (SELECT DISTINCT BusinessEntityID FROM Purchasing.ProductVendor);
+
+
+
+--a)	Выведите названия продуктов и их цену, модель которых начинается на ‘LL’. Таблицы [Production].[ProductModel] и [Production].[Product].
+SELECT Prod.Name, Prod.ListPrice
+FROM Production.Product Prod  LEFT JOIN Production.ProductModel ProdMod  ON  Prod.ProductModelID=ProdMod.ProductModelID
+WHERE ProdMod.Name LIKE 'LL%' 
+
+--b)	Выведите имена всех вендоров [Purchasing].[Vendor] и имена магазинов [Sales].[Store] одним списком в отсортированном порядке по алфавиту и без дубликатов.
+
+SELECT  Name
+FROM [Purchasing].[Vendor] 
+UNION 
+SELECT  Name
+FROM [Sales].[Store]
+ORDER BY Name
+
+
+--c)	Найдите имена продуктов, на которых действовало больше, чем 1 специальное предложение. 
+--Таблицы [Sales].[SpecialOffer],[Sales].[SpecialOfferProduct], [Production].[Product].
+
+
+SELECT pr.Name
+FROM Sales.SpecialOfferProduct sop LEFT JOIN Production.Product pr ON sop.ProductID = pr.ProductID
+GROUP BY pr.Name
+HAVING COUNT(*) > 1
