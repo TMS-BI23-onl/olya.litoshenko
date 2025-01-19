@@ -1,0 +1,6 @@
+Well done!
+
+No negative comments, great job!
+
+Please, use COUNT(1).
+6. Schemas of your both queries are the same - a subquery in WHERE. I need a different schema.
