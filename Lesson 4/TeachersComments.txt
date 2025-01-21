@@ -1,0 +1,12 @@
+Well done!
+
+2a
+We also need a case where cost is not defined. It means that it's NULL.
+
+2c
+The task was to use scheme with LEFT JOIN. Why FULL JOIN?
+After this change both solutions will show correct result.
+
+3с
+You need to swap ProdVendor and Product, if you're using LEFT JOIN. If it doesn't make sence, ask me in class.
+Also, it's better not to use COUNT(*), use COUNT(1).
