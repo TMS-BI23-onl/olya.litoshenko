@@ -1,0 +1,45 @@
+--a. 
+  SELECT UnitMeasureCode
+  FROM [AdventureWorks2017].[Production].[UnitMeasure] 
+  WHERE UnitMeasureCode LIKE 'T%' --нет
+	
+  SELECT  COUNT ( DISTINCT (UnitMeasureCode)) AS cnt
+  FROM [AdventureWorks2017].[Production].[UnitMeasure] --38
+
+    
+ INSERT INTO  AdventureWorks2017.Production.UnitMeasure (UnitMeasureCode, Name, ModifiedDate) 
+ VALUES 
+ ('TT1', 'Test 1', '2020-09-09'),
+ ('TT2', 'Test 2', getdate());
+
+  SELECT UnitMeasureCode
+  FROM [AdventureWorks2017].[Production].[UnitMeasure] 
+  WHERE UnitMeasureCode LIKE 'T%' --2 UnitMeasureCode
+
+ -- b)
+   
+  SELECT *
+  INTO Production.UnitMeasureTest
+  FROM [AdventureWorks2017].[Production].[UnitMeasure] 
+  WHERE UnitMeasureCode LIKE 'T%' 
+
+
+  INSERT INTO Production.UnitMeasureTest (UnitMeasureCode, Name, ModifiedDate)
+  SELECT *
+  FROM [AdventureWorks2017].[Production].[UnitMeasure] 
+  WHERE UnitMeasureCode = 'CAN'
+
+  SELECT *
+  FROM Production.UnitMeasureTest
+  ORDER BY UnitMeasureCode
+
+
+  --c)
+
+  UPDATE Production.UnitMeasureTest
+  SET UnitMeasureCode = 'TTT'
+
+  --d)
+  DELETE 
+  FROM Production.UnitMeasureTest
+ 
