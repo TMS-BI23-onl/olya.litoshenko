@@ -1,0 +1,43 @@
+
+--a)	Найдите информацию из Sales.SalesOrderDetail по заказам 43659,43664. 
+--С помощью оконных функций MAX, MIN, AVG найдем агрегаты по LineTotal для каждого SalesOrderID.
+
+
+SELECT *
+,MAX(LineTotal) OVER (PARTITION BY SalesOrderID) AS 'MAX'  
+,MIN(LineTotal) OVER (PARTITION BY SalesOrderID) AS 'MIN' 
+,AVG(LineTotal) OVER (PARTITION BY SalesOrderID) AS 'AVG' 
+FROM [AdventureWorks2017].[Sales].[SalesOrderDetail]
+WHERE SalesOrderID IN (43664,43659)
+
+--)	Изучите данные в объекте Sales.vSalesPerson. Создайте рейтинг cреди продавцов на основе годовых продаж SalesYTD, используя ранжирующую оконную функцию. 
+--Добавьте поле Login, состоящий из 3 первых букв фамилии в верхнем регистре + ‘login’ + TerritoryGroup (Null заменить на пустое значение). 
+--Кто возглавляет рейтинг? А кто возглавлял рейтинг в прошлом году (SalesLastYear). 
+
+SELECT *, UPPER (LEFT (LastName,3))+'login'+ (SELECT CASE WHEN TerritoryGroup IS NOT NULL THEN TerritoryGroup	ELSE '' END) AS Login,
+RANK () OVER (ORDER BY SalesYTD DESC) AS rank_person
+FROM Sales.vSalesPerson -- MITloginNorth America
+
+
+SELECT *, UPPER (LEFT (LastName,3))+'login'+ (SELECT CASE WHEN TerritoryGroup IS NOT NULL THEN TerritoryGroup	ELSE '' END) AS Login,
+RANK () OVER (ORDER BY SalesLastYear DESC) AS rank_person
+FROM Sales.vSalesPerson --VARloginEurope
+
+
+
+
+--c)	Найдите первый будний день следующего месяца (FROM не используем). Нужен стандартный код на все времена.
+
+
+
+
+SELECT
+CASE 
+WHEN CAST(DATENAME(weekday, DATEADD(day, 1, EOMONTH (GETDATE()))) as varchar) NOT IN ('суббота', 'воскресенье') THEN DATEADD(day, 1, EOMONTH (GETDATE()))
+WHEN CAST(DATENAME(weekday, DATEADD(day, 2, EOMONTH (GETDATE()))) as varchar) NOT IN ('суббота', 'воскресенье') THEN DATEADD(day, 2, EOMONTH (GETDATE()))
+ELSE DATEADD(day, 3, EOMONTH (GETDATE()))
+END
+
+
+
+
