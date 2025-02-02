@@ -1,0 +1,78 @@
+--3.	Посмотрите как функции getdate() и newid() используются для формирования таблицы Production.Document.
+-- getdate - устанавливает значение  текущей даты в ModifiedDate по умолчанию
+ ALTER TABLE [Production].[Document] ADD  CONSTRAINT [DF_Document_ModifiedDate]  DEFAULT (getdate()) FOR [ModifiedDate]
+ 
+ --newid - устанавливает рандомное значение  в rowguid по умолчанию
+ ALTER TABLE [Production].[Document] ADD  CONSTRAINT [DF_Document_rowguid]  DEFAULT (newid()) FOR [rowguid]
+
+
+ --4.	Изучите свойство identity. Рассмотрите пример A. Посмотрите, как используется данное свойство при формировании таблицы Production.Product.
+ При добавлении нового товара,значение его ID будет увеличено на 1 от предыдущей стоки 
+
+
+--6.	В базе данных AdventureWorks2017 создать таблицу Patients для ведения наблюдений за температурой пациентов больницы. Таблица должна содержать поля:
+ID – числовое поле. Авто заполняется.
+FirstName – имя пациента.
+LastName – фамилия пациента.
+SSN – уникальный идентификатор пациента.
+Email – электронная почта пациента. Формируется по следующему правилу: первая большая буква FirstName + маленькие 3 буквы LastName + @mail.com (например, Akli@mail.com). Полезная ссылка здесь. 
+Temp – температура пациента.
+CreatedDate — дата измерений. 
+
+
+CREATE TABLE Patients
+(
+ Id INT IDENTITY PRIMARY KEY,
+ FirstName NVARCHAR(100) NOT NULL,
+ LastName NVARCHAR(100) NOT NULL,
+ SSN NVARCHAR(50) NOT NULL,
+ Email AS CONCAT (UPPER(LEFT (FirstName, 1)), LOWER (LEFT(LastName, 3)), '@mail.com'),
+ Temp DECIMAL(3,1),
+ CreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
+ );
+
+ --7.	Добавить в таблицу несколько произвольных записей. 
+ INSERT INTO Patients (FirstName,LastName,SSN,Temp)
+ VALUES ('Evelina','Bogdanova','111-a', 38.0), ('Emma','Jones','222-b', 36.6),('Ann','Shybko','333-c', 37.2)
+
+-- 8.	Добавить поле TempType со следующими значениями ‘< 37°C’,  ‘> 37°C’ на основе значений из поля Temp ( используйте ALTER TABLE 
+--ADD column AS ). Посмотрите на данные, которые получились.
+ALTER TABLE Patients
+ADD TempType AS 
+CASE WHEN Temp <37.0 THEN '< 37°C' ELSE '> 37°C'
+END;
+
+
+--9.	Создать представление Patients_v, показывающее температуру в градусах Фаренгейта (°F = °Cx9/5 + 32)
+CREATE VIEW Patients_v AS
+SELECT Id, Temp, Temp * 9/5 + 32 as TempF FROM Patients;
+
+select * from Patients_v;
+
+--10.	Создать функцию, которая возвращает температуру в градусах Фаренгейта, при подаче на вход градусы в Цельсиях.
+
+CREATE FUNCTION temp_udf(@temp DECIMAL(3,1))
+RETURNS DECIMAL(4,1)
+AS BEGIN 
+DECLARE @tempF DECIMAL(4,1)
+SET @tempF = @temp * 9/5 + 32
+RETURN @tempF
+END
+
+
+--11.	Перепишите решение задачи 2c из прошлого дз с использованием переменной, максимально упрощая select.
+
+
+DECLARE @d1 DATE
+DECLARE @d2 DATE
+DECLARE @d3 DATE
+SET @d1 = DATEADD(day, 1, EOMONTH (GETDATE()))
+SET @d2 = DATEADD(day, 2, EOMONTH (GETDATE()))
+SET @d3 = DATEADD(day, 3, EOMONTH (GETDATE()))
+
+SELECT
+CASE 
+WHEN CAST(DATENAME(weekday, @d1) as varchar) NOT IN ('суббота', 'воскресенье') THEN @d1
+WHEN CAST(DATENAME(weekday, @d2) as varchar) NOT IN  ('суббота', 'воскресенье') THEN @d2
+ELSE @d3
+END
