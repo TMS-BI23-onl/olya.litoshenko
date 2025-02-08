@@ -1,0 +1,3 @@
+SELECT ROW_NUMBER() OVER(ORDER BY t1.first_name, t2.last_name) as id, t1.first_name, t2.last_name
+FROM test1 t1
+CROSS JOIN  test1 t2
