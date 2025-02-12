@@ -1,0 +1,76 @@
+--2.	Решите следующую задачу. 
+--Дана таблица людей People. Поля: ID, FirstName, LastName,  ID_Father, ID_Mother.
+--Для всех Дмитриев выведите их ФИО и ФИО их отцов.
+CREATE TABLE People
+(ID int,
+LastName nvarchar (50),
+FirstName nvarchar (50), 
+ID_Father int,
+ID_Mother int
+);
+
+INSERT INTO People (ID, LastName, FirstName, ID_Father, ID_Mother)
+VALUES ('1','Pavlov','Demid','55','38'),
+		('2','Alexandrova','Sofia','54','38'),
+		('3','Belova','Elizaveta','84','377'),
+		('4','Korolev','Dmitry','5','45'),
+		('5','Korolev','Yuri','6','87'),
+		('6','Korolev','Mark','222','87'),
+		('7','Veshnyakova','Vasilisa','333','25'),
+		('8','Egorova','Agnia','458','777'),
+		('9','Alekseev','Dmitry','10','57'),
+		('10','Alekseev','Gleb','444','334');
+		
+SELECT  FN.LastName, FN.FirstName, FTH.LastName AS Father_LastName , FTH.FirstName AS Father_FirstName
+FROM People FN  JOIN  People FTH ON FN.ID_Father=FTH.ID
+WHERE FN.FirstName = 'Dmitry'
+
+
+
+--3.	Оператор MERGE. Выполните следующий код
+CREATE TABLE TeamsTest(
+	team_id	int identity,
+	team_name	varchar(20),
+	team_code	char(3),
+	main_sponsor	nvarchar(30),
+	director_name	nvarchar(30)
+)
+
+INSERT INTO TeamsTest (team_name, team_code, main_sponsor, director_name)
+VALUES
+('Ferrari', 'FER', 'HP', 'Fred Vasseur'),
+('Aston Martin', 'AMR', 'Cognizant', 'Lawrence Stroll'),
+('McLaren', 'MCL', 'OKX', 'Andreas Seidl'),
+('Red Bull', 'RBR', 'Oracle', 'Christian Horner')
+
+CREATE TABLE TeamsTestUpd(
+	team_id	int identity,
+	team_name	varchar(20),
+	team_code	char(3),
+	main_sponsor	nvarchar(30),
+	director_name	nvarchar(30)
+)
+
+INSERT INTO TeamsTestUpd (team_name, team_code, main_sponsor, director_name)
+VALUES
+('Ferrari', 'FER', 'HP', 'Fred Vasseur'),
+('Aston Martin', 'AMR', 'Aramco', 'awrence Stroll'),
+('McLaren', 'MCL', 'OKX', 'Andreas Seidl'),
+('Red Bull Racing', 'RBR', 'Oracle', 'Dr Marco'),
+('Mercedes AMG', 'AMG', 'Petronas', 'Toto Wolff')
+
+SELECT * FROM TeamsTest
+SELECT * FROM TeamsTestUpd
+
+MERGE TeamsTest target
+USING TeamsTestUpd source ON target.team_code=source.team_code
+
+WHEN MATCHED AND (target.Team_name != source.Team_name OR target.Director_name != source.Director_name )
+THEN UPDATE SET target.Team_name = source.Team_name,
+				target.Main_sponsor = source.Main_sponsor,
+				target.Director_name = source.Director_name
+WHEN NOT MATCHED BY target
+THEN INSERT (team_name, team_code, main_sponsor, director_name)
+VALUES (source.team_name, source.team_code, source.main_sponsor, source.director_name)
+
+;
