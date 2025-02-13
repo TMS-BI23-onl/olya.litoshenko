@@ -1,0 +1,37 @@
+--1) Найдите людей и их номера телефонов, код города (первые 3 цифры телефонного номера) которых начинается на  4 и заканчивается на 5.
+--( таблицы Person.PersonPhone, Person.Person) 
+
+SELECT P.BusinessEntityID,p.FirstName, PPh.PhoneNumber, LEFT (PPh.PhoneNumber, 3) AS code_city
+FROM   Person.Person P LEFT JOIN  Person.PersonPhone  PPh ON p.BusinessEntityID=PPh.BusinessEntityID
+WHERE LEFT (PPh.PhoneNumber, 3)  LIKE '4%5'
+
+
+
+
+2) Отнести каждого человека из [HumanResources].[Employee] в свою возрастную категорию:
+Adolescence: 17-20
+Adults: 21-59
+Elderly: 60-75
+Senile: 76-90
+
+
+
+
+
+3) Вывести самый дорогой продукт для каждого цвета из [Production].[Product] (3 способа)
+
+
+SELECT *,TOP 1 StandardCost
+FROM [Production].[Product]
+ORDER BY StandardCost DESC
+GROUP BY Color
+
+SELECT *
+FROM [Production].[Product]
+WHERE StandardCost = (SELECT MAX (StandardCost) FROM [Production].[Product])
+
+
+SELECT *
+FROM (SELECT *,StandardCost, MAX (StandardCost) OVER () AS max_cost
+		FROM [Production].[Product])
+WHERE StandardCost = max_cost
