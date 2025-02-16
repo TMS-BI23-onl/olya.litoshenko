@@ -1,0 +1,62 @@
+--1) Найдите людей и их номера телефонов, код города (первые 3 цифры телефонного номера) которых начинается на  4 и заканчивается на 5.
+--( таблицы Person.PersonPhone, Person.Person) 
+
+SELECT P.BusinessEntityID,p.FirstName, PPh.PhoneNumber, LEFT (PPh.PhoneNumber, 3) AS code_city
+FROM   Person.Person P LEFT JOIN  Person.PersonPhone  PPh ON p.BusinessEntityID=PPh.BusinessEntityID
+WHERE LEFT (PPh.PhoneNumber, 3)  LIKE '4%5'
+
+
+--2) Отнести каждого человека из [HumanResources].[Employee] в свою возрастную категорию:
+--Adolescence: 17-20
+--Adults: 21-59
+--Elderly: 60-75
+--Senile: 76-90
+
+
+
+SELECT BusinessEntityID, BirthDate, DATEDIFF (YEAR,BirthDate, GETDATE()) AS yearsold ,
+CASE 
+WHEN DATEDIFF (YEAR,BirthDate, GETDATE()) BETWEEN 17 AND 20 THEN 'Adolescence' 
+WHEN DATEDIFF (YEAR,BirthDate, GETDATE()) BETWEEN 21 AND 59 THEN 'Adults' 
+WHEN DATEDIFF (YEAR,BirthDate, GETDATE()) BETWEEN 60 AND 75 THEN 'Elderly' 
+WHEN DATEDIFF (YEAR,BirthDate, GETDATE()) BETWEEN 76 AND 90 THEN 'Senile' 
+ELSE 'NULL'
+END AS category
+FROM [HumanResources].[Employee]
+
+
+
+
+3--) Вывести самый дорогой продукт для каждого цвета из [Production].[Product] (3 способа)
+
+
+SELECT Color, MAX(StandardCost)
+FROM [Production].[Product]
+GROUP BY Color
+
+SELECT DISTINCT Color, MAX (StandardCost) OVER (Partition BY Color) AS max_cost
+		FROM [Production].[Product]
+
+
+SELECT * 
+FROM (SELECT Color, StandardCost, ROW_NUMBER() OVER(Partition BY Color ORDER BY StandardCost DESC) as rate FROM[Production].[Product]) as sq 
+WHERE rate = 1
+
+
+
+
+
+
+--4) Требования:7 сущностей + придумать 2 задачи
+Вокзал
+ №1  Маршрут (ID_НомерПоезда, ID_ГородОтправления,ID_ГородПрибытия,ID_Пассажира,ID_Билета, ДатаОтправления, ДатаПрибытия, ВремяОтправления, ВремяПрибытия)
+ №2  Города (ID_Города, НазваниеГорода)
+ №3  Пассажиры (ID_Пассажира,ID_Билета, ФИО_Пассажира, ПаспортныеДанные)
+ №4  Поезд (ID_НомерПоезда,ID_Состава, НазваниеПоезда)
+ №5  Билет (ID_НомерПоезда,ID_Билета,ID_Пассажира,	НомерМеста, НомерВагон, ТипВагона, СтоимостьПоездки)
+ №6  СоставПоезда (ID_Состава, ФИОНачальникаПоезда)
+ №7  Остановки (ID_НомерПоезда,ID_Города,ID_НомерПоезда, ВремяОстановки)
+
+ 1. Найти всех пассажиров с фамилией, начинющейся с Б, которые ехали из Москвы в Калининград 20.12.2024. 
+ Вывести все данные пасажира, ФИО начальника поезда этого поезда и город, с который ехал каждый из пассажиров.
+ 2. Найти самую долгую остановку на пути из Минска в Москву

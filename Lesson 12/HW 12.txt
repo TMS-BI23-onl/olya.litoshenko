@@ -1,0 +1,122 @@
+--3.	Напишите скрипт для суммы OrderQty для каждого года и зимних месяцев
+--из Production.WorkOrder в виде транспонированной матрицы:
+SELECT *, OrderQty
+FROM Production.WorkOrder
+
+
+
+SELECT  year_of_year,'1','2','12'
+FROM 
+(
+SELECT datepart (YEAR,StartDate)as year_of_year, datepart (month,StartDate)  as month_of_year , OrderQty
+FROM Production.WorkOrder
+WHERE datepart (month,StartDate) IN ('1','2','12') 
+) AS month_year
+PIVOT 
+(
+	SUM (OrderQty)
+	FOR month_of_year IN ('1','2','12') --не корректно работает эта чать 
+) AS pivot_table
+
+
+
+
+
+--5.	Создать таблицу с количеством использования функций, используя data_for_merge.csv,
+--заполнить ее через оператор merge.  Итоговая таблица с результатами должна иметь вид
+
+SELECT *
+FROM [dbo].[data_for_merge]
+
+CREATE TABLE data_for_merge_new(
+Function_name nvarchar (50),
+Function_count int
+)
+
+SELECT *
+FROM data_for_merge_new
+
+
+
+
+MERGE data_for_merge_new target
+USING data_for_merge source ON target.Function_name= source.Alex
+WHEN NOT MATCHED BY TARGET
+THEN INSERT (Function_name,Function_count)
+VALUES (source.Alex, 1 )
+WHEN  MATCHED 
+THEN UPDATE SET target.Function_count = target.Function_count + 1
+;
+
+
+MERGE data_for_merge_new target
+USING data_for_merge source ON target.Function_name= source.Carlos
+WHEN NOT MATCHED BY  target
+THEN INSERT (Function_name, Function_count)
+VALUES (source.Carlos,1)
+WHEN  MATCHED 
+THEN UPDATE SET target.Function_count = target.Function_count + 1
+;
+
+MERGE data_for_merge_new target
+USING data_for_merge source ON target.Function_name= source.Charles
+WHEN NOT MATCHED BY  target
+THEN INSERT (Function_name, Function_count)
+VALUES (source.Charles,1)
+WHEN  MATCHED 
+THEN UPDATE SET target.Function_count = target.Function_count + 1
+;
+
+MERGE data_for_merge_new target
+USING data_for_merge source ON target.Function_name= source.Daniel
+WHEN NOT MATCHED BY  target
+THEN INSERT (Function_name, Function_count)
+VALUES (source.Daniel,1)
+WHEN  MATCHED 
+THEN UPDATE SET target.Function_count = target.Function_count + 1
+;	
+
+MERGE data_for_merge_new target
+USING data_for_merge source ON target.Function_name= source.Esteban
+WHEN NOT MATCHED BY  target
+THEN INSERT (Function_name, Function_count)
+VALUES (source.Esteban,1)
+WHEN  MATCHED 
+THEN UPDATE SET target.Function_count = target.Function_count + 1
+;
+
+MERGE data_for_merge_new target
+USING data_for_merge source ON target.Function_name= source.Fred
+WHEN NOT MATCHED BY  target
+THEN INSERT (Function_name, Function_count)
+VALUES (source.Fred,1)
+WHEN  MATCHED 
+THEN UPDATE SET target.Function_count = target.Function_count + 1
+;
+
+MERGE data_for_merge_new target
+USING data_for_merge source ON target.Function_name= source.George
+WHEN NOT MATCHED BY  target
+THEN INSERT (Function_name, Function_count)
+VALUES (source.George,1)
+WHEN  MATCHED 
+THEN UPDATE SET target.Function_count = target.Function_count + 1
+;
+
+MERGE data_for_merge_new target
+USING data_for_merge source ON target.Function_name= source.Lando
+WHEN NOT MATCHED BY  target
+THEN INSERT (Function_name, Function_count)
+VALUES (source.Lando,1)
+WHEN  MATCHED 
+THEN UPDATE SET target.Function_count = target.Function_count + 1
+;
+
+MERGE data_for_merge_new target
+USING data_for_merge source ON target.Function_name= source.Lewis
+WHEN NOT MATCHED BY  target
+THEN INSERT (Function_name, Function_count)
+VALUES (source.Lewis,1)
+WHEN  MATCHED 
+THEN UPDATE SET target.Function_count = target.Function_count + 1
+;
