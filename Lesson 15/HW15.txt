@@ -1,0 +1,36 @@
+CREATE VIEW top_50 AS
+SELECT TOP 50 r.CustomerId , SUM (r.rating_c) AS total_rating
+FROM 
+	(SELECT CustomerId, DateOrder, 
+	CASE 
+	WHEN COUNT (1) >= 10 THEN 3
+	WHEN COUNT (1) BETWEEN 5 AND 9 THEN 2
+	ELSE 1
+	END AS rating_c
+	FROM [Shop].[dbo].[Orders] 
+	GROUP BY CustomerId, DateOrder) r
+GROUP BY r.CustomerId
+ORDER BY total_rating DESC
+
+
+
+
+1 график
+Убрать фоновую заливку
+Изменить цвет границы графика на светло серый
+Убрать легенду
+Добавить подписи   со значениями над столбиками
+Убрать название шкал (number of calories, type of food)
+Название отделить от графика ближе к верхней границе
+
+2 график
+Изменить 3д представление на 2д
+Название графика переместить вверх
+Изменить на bar chart
+
+3 график
+Название выделить
+подпить оси х перенести вниз
+Добавить подписи данных над столбцами
+Подписи столбцов снизу перевернуть
+Поменять тип графина на бар чарт с линией тренда
