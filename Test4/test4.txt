@@ -1,0 +1,59 @@
+--1. Найти ProductSubcategoryID из Production.Product, где мин вес такого ProductSubcategoryID больше 150. 
+SELECT ProductSubcategoryID, t.min_weight
+FROM (
+	SELECT  ProductSubcategoryID, MIN (Weight) as min_weight
+	FROM [AdventureWorks2017].[Production].[Product]
+	GROUP BY ProductSubcategoryID) t
+WHERE t.min_weight >=150
+
+
+--2. Найти самый дорогой продукт (поле StandardCost) из Production.Product. (4 способа)
+
+-- 1 способ
+SELECT TOP 1 Name, Name, StandardCost
+FROM [AdventureWorks2017].[Production].[Product]
+ORDER BY StandardCost DESC
+
+--2 способ
+SELECT Name, StandardCost
+FROM (
+	SELECT  Name, StandardCost, MAX(StandardCost) OVER() as max_cost
+	FROM [AdventureWorks2017].[Production].[Product]) t
+WHERE StandardCost = t.max_cost
+
+--3 способ
+SELECT Name, StandardCost
+FROM [AdventureWorks2017].[Production].[Product]
+WHERE StandardCost = 
+	(SELECT  MAX(StandardCost)
+	FROM [AdventureWorks2017].[Production].[Product])
+	
+--4 способ
+SELECT Name, StandardCost
+FROM(
+	SELECT Name, StandardCost, rank() OVER (ORDER BY StandardCost DESC) AS rnk
+	FROM [AdventureWorks2017].[Production].[Product]) t
+WHERE t.rnk = 1
+
+3. Найти клиентов, которые за последний год не совершили ни одного заказа (схема Shop)
+SELECT CustomerID
+FROM Orders
+WHERE CustomerID NOT IN 
+	(SELECT *
+	FROM Orders 
+	WHERE YEAR(Date) IN YEAR(GETDATE()))
+
+
+
+4. Найти для каждого продукта кол-во заказов за последние 5 лет.  (схема Shop)
+
+SELECT ProductID, COUNT(1) OVER (Partition BY ProductID) as cnt_orders
+FROM Orders
+WHERE YEAR(Date) between (2025 and 2020)
+
+
+
+SELECT ProductID, COUNT (1)
+FROM Orders
+WHERE datediff(YEAR,YEAR(GETDATE(),YEAR(Date))<=5
+GROUP BY ProductID
